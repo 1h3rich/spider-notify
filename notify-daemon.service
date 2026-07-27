@@ -1,0 +1,16 @@
+[Unit]
+Description=Custom Notification Daemon
+After=graphical-session.target plasma-plasmashell.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/spider-notify.py
+Restart=on-failure
+RestartSec=3
+Environment=DISPLAY=:0
+Environment=PYTHONUNBUFFERED=1
+Environment=QT_QPA_PLATFORM=xcb
+
+[Install]
+WantedBy=graphical-session.target

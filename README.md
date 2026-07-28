@@ -1,6 +1,6 @@
 # spider-notify
 
-Demonio de notificaciones para KDE Plasma 6, con icono propio, arriba de la pantalla, estilo oscuro/lavanda.
+Icono de araña para KDE Plasma 6, con icono propio, arriba de la pantalla, estilo oscuro/lavanda.
 
 ## Por qué existe
 

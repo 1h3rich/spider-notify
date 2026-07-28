@@ -1,5 +1,8 @@
 # spider-notify
 
+> ⚠️ **Solo Linux.** Hecho y probado en CachyOS (Arch Linux) + KDE Plasma 6. No
+> se sabe si funciona en otras distros de Linux — no funciona en Windows ni macOS.
+
 Demonio de notificaciones para KDE Plasma 6, con icono propio, arriba de la pantalla, estilo oscuro/lavanda.
 
 ## Por qué existe

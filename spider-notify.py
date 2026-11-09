@@ -61,22 +61,19 @@ class Notifier(QObject):
             self.popups[nid].dismiss()
         w = NotificationWidget(nid, app_name, summary, body, timeout_ms,
                                self.screen, self._on_closed)
+        target_y = self._next_y()
         self.popups[nid] = w
-        w.show_at(self._next_y())
+        w.show_at(target_y)
 
     def _close(self, nid):
         if nid in self.popups:
             self.popups[nid].dismiss()
 
     def _next_y(self):
-        if not self.popups:
-            return Y_SHOWN
-        bottom = Y_SHOWN
-        for w in self.popups.values():
-            # w.y() is absolute; subtract screen.y() to get relative position
-            rel_bottom = (w.y() - self.screen.y()) + w.height() + 8
-            bottom = max(bottom, rel_bottom)
-        return bottom
+        # Reserve space from the stable stack order. Reading w.y() here is
+        # unreliable because a popup that is still entering starts above the
+        # screen, which made rapid notifications overlap at Y_SHOWN.
+        return Y_SHOWN + sum(w.height() + 8 for w in self.popups.values())
 
     def _on_closed(self, nid):
         self.popups.pop(nid, None)
@@ -103,9 +100,16 @@ class NotificationWidget(QWidget):
             Qt.WindowType.FramelessWindowHint |
             Qt.WindowType.WindowStaysOnTopHint |
             Qt.WindowType.Tool |
-            Qt.WindowType.X11BypassWindowManagerHint
+            Qt.WindowType.X11BypassWindowManagerHint |
+            Qt.WindowType.WindowDoesNotAcceptFocus
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
+        # The daemon runs through XWayland so KWin receives the proper EWMH
+        # notification/no-input-focus hints instead of treating this as a
+        # normal application window.
+        self.setAttribute(Qt.WidgetAttribute.WA_X11NetWmWindowTypeNotification)
+        self.setAttribute(Qt.WidgetAttribute.WA_X11DoNotAcceptFocus)
         self.setFixedWidth(POPUP_WIDTH)
 
         self._build_ui(app_name, summary, body)
